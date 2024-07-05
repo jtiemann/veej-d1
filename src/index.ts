@@ -11,8 +11,28 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
+export interface Env {
+  // If you set another name in wrangler.toml as the value for 'binding',
+  // replace "DB" with the variable name you defined.
+  DB: D1Database;
+}
+
 export default {
-	async fetch(request, env, ctx): Promise<Response> {
-		return new Response('Hello World!');
-	},
+  async fetch(request, env): Promise<Response> {
+    const { pathname } = new URL(request.url);
+
+    if (pathname === "/api/users") {
+      // If you did not use `DB` as your binding name, change it here
+      const { results } = await env.DB.prepare(
+        "SELECT * FROM users" //WHERE id = ?"
+      )
+        //.bind(1)
+        .all();
+      return Response.json(results);
+    }
+
+    return new Response(
+      "Call /api/users to see all users"
+    );
+  },
 } satisfies ExportedHandler<Env>;
