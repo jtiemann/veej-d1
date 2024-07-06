@@ -34,7 +34,15 @@ app.get('/:action', async (c) => {
   console.log(ret)
   return c.html(ret)
 });
+app.get('/', async (c) => {
+  const req = c.req;
+  const ret = await endpoints({
+  msg: { ...req.param(), payload: req.query(), c }
+})
 
+  console.log(ret)
+  return c.html(ret)
+});
 export default app satisfies ExportedHandler<Env>;
 
 // export default {

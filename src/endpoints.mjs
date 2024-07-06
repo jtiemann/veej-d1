@@ -11,9 +11,10 @@ const endpoints = (p) => {
     return cond([
       [({ msg }) => msg.action == 'simple',  (j) => router['simple'](j)],
       [({ msg }) => msg.action == 'users',  (j) => router['users'](j)],
+      [({ msg }) => msg.action == undefined,  (j) => router['users'](j)],
       [({ msg }) => msg.action == 'products',  (j) => router['products'](j)],
       [({ msg }) => msg.action == 'productById',  (j) => router['productById'](j)],
-      [_ => true, x => console.error('unknown', x)]
+      [_ => true, x => { console.error('unknown', x); return "no matching route"}]
     ]) ({ msg })
   }
 
@@ -29,7 +30,7 @@ const endpoints = (p) => {
 
      try {
       // Query the products table
-      const users = await msg.c.env.DB.prepare("SELECT * FROM users")
+      const users = await msg.c.env.DB.prepare("SELECT * FROM users where id < 4")
       .all();
       const template = await msg.c.env.DB.prepare("select template from templates where name = 'homepage'")
       .all();
